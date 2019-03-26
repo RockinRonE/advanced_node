@@ -17,6 +17,13 @@ module.exports = app => {
     const redis = require('redis')
     const redisUrl = 'redis://127.0.0.1:6379'
     const client = redis.createClient(redisUrl)
+    const util = require('util')
+    // takes a function with a callback and returns a promise instead
+    // returns new function that's been promisified
+    client.get = util.promisify(client.get)
+
+    // Do we have any cached data in redis?
+    const cachedBlogs = await client.get(req.user.id)
 
     const blogs = await Blog.find({ _user: req.user.id })
 
